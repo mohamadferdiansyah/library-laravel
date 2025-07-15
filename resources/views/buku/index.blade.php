@@ -152,7 +152,170 @@
     </div>
 </div>
 
-<!-- Keep all existing modals and scripts -->
+<!-- Create Buku Modal -->
+<div id="createBukuModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tambah Buku</h3>
+            <form method="POST" action="{{ route('buku.store') }}">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Judul Buku</label>
+                        <input type="text" name="judul" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Judul Buku" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kode Buku</label>
+                        <input type="text" name="kode_buku" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kode Buku" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tahun Terbit</label>
+                        <input type="number" name="tahun_terbit" min="1900" max="{{ date('Y') }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tahun Terbit" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Penulis</label>
+                        <input type="text" name="penulis" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama Penulis" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Penerbit</label>
+                        <select name="penerbit_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Pilih Penerbit</option>
+                            @foreach($penerbits as $penerbit)
+                                <option value="{{ $penerbit->id }}">{{ $penerbit->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 mt-6">
+                    <button type="button" onclick="closeModal('createBukuModal')" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">
+                        Tambah
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Buku Modals -->
+@foreach($bukus as $buku)
+<div id="editBukuModal{{ $buku->id }}" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Buku</h3>
+            <form method="POST" action="{{ route('buku.update', $buku->id) }}">
+                @csrf
+                @method('PUT')
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Judul Buku</label>
+                        <input type="text" name="judul" value="{{ $buku->judul }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Judul Buku" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kode Buku</label>
+                        <input type="text" name="kode_buku" value="{{ $buku->kode_buku }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kode Buku" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tahun Terbit</label>
+                        <input type="number" name="tahun_terbit" value="{{ $buku->tahun_terbit }}" min="1900" max="{{ date('Y') }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tahun Terbit" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Penulis</label>
+                        <input type="text" name="penulis" value="{{ $buku->penulis }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama Penulis" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Penerbit</label>
+                        <select name="penerbit_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Pilih Penerbit</option>
+                            @foreach($penerbits as $penerbit)
+                                <option value="{{ $penerbit->id }}" {{ $penerbit->id == $buku->penerbit_id ? 'selected' : '' }}>
+                                    {{ $penerbit->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 mt-6">
+                    <button type="button" onclick="closeModal('editBukuModal{{ $buku->id }}')" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
+
+<!-- Delete Buku Modals -->
+@foreach($bukus as $buku)
+<div id="deleteBukuModal{{ $buku->id }}" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Hapus Buku</h3>
+            <p class="text-gray-600 mb-6">Yakin ingin menghapus buku <strong>{{ $buku->judul }}</strong> dengan kode <strong>{{ $buku->kode_buku }}</strong>?</p>
+            <form method="POST" action="{{ route('buku.destroy', $buku->id) }}">
+                @csrf
+                @method('DELETE')
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('deleteBukuModal{{ $buku->id }}')" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200">
+                        Hapus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
+
+<!-- Detail Penerbit Modals -->
+@foreach($penerbits as $penerbit)
+<div id="penerbitDetailModal{{ $penerbit->id }}" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Detail Penerbit</h3>
+                <button onclick="closeModal('penerbitDetailModal{{ $penerbit->id }}')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penerbit</label>
+                    <p class="text-sm text-gray-900">{{ $penerbit->name }}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                    <p class="text-sm text-gray-900">{{ $penerbit->alamat }}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                    <p class="text-sm text-gray-900">{{ $penerbit->nomor_telepon }}</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Bergabung Sejak</label>
+                    <p class="text-sm text-gray-900">{{ $penerbit->created_at->format('d/m/Y H:i') }}</p>
+                </div>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button onclick="closeModal('penerbitDetailModal{{ $penerbit->id }}')" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
+
 <script>
 function openModal(modalId) {
     document.getElementById(modalId).classList.remove('hidden');

@@ -129,7 +129,120 @@
     </div>
 </div>
 
-<!-- Keep all existing modals and scripts -->
+<div id="createMemberCardModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tambah Member Card</h3>
+            <form method="POST" action="{{ route('member-card.store') }}">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Member</label>
+                        <select name="member_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Pilih Member</option>
+                            @foreach($members as $member)
+                                <option value="{{ $member->id }}">{{ $member->nama }} ({{ $member->email }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Kartu</label>
+                        <input type="text" name="nomor_kartu" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor Kartu" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Aktif</label>
+                        <input type="date" name="tanggal_aktif" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluarsa</label>
+                        <input type="date" name="tanggal_kadaluarsa" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 mt-6">
+                    <button type="button" onclick="closeModal('createMemberCardModal')" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">
+                        Tambah
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Member Card Modals -->
+@foreach($memberCards as $memberCard)
+<div id="editMemberCardModal{{ $memberCard->id }}" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Member Card</h3>
+            <form method="POST" action="{{ route('member-card.update', $memberCard->id) }}">
+                @csrf
+                @method('PUT')
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Member</label>
+                        <select name="member_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Pilih Member</option>
+                            @foreach($members as $member)
+                                <option value="{{ $member->id }}" {{ $member->id == $memberCard->member_id ? 'selected' : '' }}>
+                                    {{ $member->nama }} ({{ $member->email }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Kartu</label>
+                        <input type="text" name="nomor_kartu" value="{{ $memberCard->nomor_kartu }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor Kartu" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Aktif</label>
+                        <input type="date" name="tanggal_aktif" value="{{ $memberCard->tanggal_aktif }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluarsa</label>
+                        <input type="date" name="tanggal_kadaluarsa" value="{{ $memberCard->tanggal_kadaluarsa }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 mt-6">
+                    <button type="button" onclick="closeModal('editMemberCardModal{{ $memberCard->id }}')" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
+
+<!-- Delete Member Card Modals -->
+@foreach($memberCards as $memberCard)
+<div id="deleteMemberCardModal{{ $memberCard->id }}" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Hapus Member Card</h3>
+            <p class="text-gray-600 mb-6">Yakin ingin menghapus kartu member <strong>{{ $memberCard->nomor_kartu }}</strong> milik <strong>{{ $memberCard->member ? $memberCard->member->nama : 'Member tidak ditemukan' }}</strong>?</p>
+            <form method="POST" action="{{ route('member-card.destroy', $memberCard->id) }}">
+                @csrf
+                @method('DELETE')
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('deleteMemberCardModal{{ $memberCard->id }}')" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200">
+                        Hapus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
+
 <script>
 function openModal(modalId) {
     document.getElementById(modalId).classList.remove('hidden');

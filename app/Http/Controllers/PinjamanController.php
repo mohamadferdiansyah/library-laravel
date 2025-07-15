@@ -19,23 +19,23 @@ class PinjamanController extends Controller
         if ($request->has('search') && $request->search !== '') {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
-                $q->where('tanggal_pinjam', 'like', "%{$searchTerm}%")
-                  ->orWhere('tanggal_kadaluarsa', 'like', "%{$searchTerm}%")
-                  ->orWhere('status', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('member', function($memberQuery) use ($searchTerm) {
-                      $memberQuery->where('nama', 'like', "%{$searchTerm}%")
-                                 ->orWhere('email', 'like', "%{$searchTerm}%");
-                  })
-                  ->orWhereHas('buku', function($bukuQuery) use ($searchTerm) {
-                      $bukuQuery->where('judul', 'like', "%{$searchTerm}%")
-                               ->orWhere('kode_buku', 'like', "%{$searchTerm}%")
-                               ->orWhere('penulis', 'like', "%{$searchTerm}%");
-                  });
+                $q->whereHas('member', function($memberQuery) use ($searchTerm) {
+                    $memberQuery->where('nama', 'like', "%{$searchTerm}%")
+                               ->orWhere('email', 'like', "%{$searchTerm}%");
+                })
+                ->orWhereHas('buku', function($bukuQuery) use ($searchTerm) {
+                    $bukuQuery->where('judul', 'like', "%{$searchTerm}%")
+                             ->orWhere('kode_buku', 'like', "%{$searchTerm}%")
+                             ->orWhere('penulis', 'like', "%{$searchTerm}%");
+                })
+                ->orWhere('status', 'like', "%{$searchTerm}%")
+                ->orWhere('tanggal_pinjam', 'like', "%{$searchTerm}%")
+                ->orWhere('tanggal_kadaluarsa', 'like', "%{$searchTerm}%");
             });
         }
         
-        // Filter berdasarkan status
-        if ($request->has('status') && $request->status !== '') {
+        // Filter berdasarkan status - PERBAIKAN: Cek apakah status tidak kosong DAN bukan null
+        if ($request->has('status') && $request->status !== '' && $request->status !== null) {
             $query->where('status', $request->status);
         }
         
@@ -74,12 +74,6 @@ class PinjamanController extends Controller
         return view("pinjaman.index", compact("pinjamans", "members", "bukus"));
     }
 
-    public function export(Request $request)
-    {
-        $filename = 'data-pinjaman-' . now()->format('Y-m-d-H-i-s') . '.xlsx';
-        
-        return Excel::download(new PinjamanExport($request), $filename);
-    }
 
     public function store(Request $request)
     {
@@ -178,4 +172,9 @@ class PinjamanController extends Controller
         $pinjaman->delete();
         return redirect()->route('pinjaman.index')->with('success', 'Pinjaman berhasil dihapus!');
     }
+
+    public function export()
+{
+    return Excel::download(new PinjamanExport, 'data-pinjaman.xlsx');
+}
 }

@@ -18,7 +18,7 @@ class IsLogin
     {
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu');
-        }
+        } 
 
         return $next($request);
     }
