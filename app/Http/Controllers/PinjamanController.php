@@ -115,24 +115,15 @@ class PinjamanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'member_id' => 'required|integer|exists:member,id',
-            'buku_id' => 'required|integer|exists:buku,id',
+            'member_id' => 'required|integer',
+            'buku_id' => 'required|integer',
             'tanggal_pinjam' => 'required|date|before_or_equal:today',
             'status' => 'required|in:dipinjam,dikembalikan',
             'tanggal_kadaluarsa' => 'required|date|after:tanggal_pinjam',
         ], [
             'member_id.required' => 'Member wajib dipilih',
-            'member_id.exists' => 'Member yang dipilih tidak valid',
             'buku_id.required' => 'Buku wajib dipilih',
-            'buku_id.exists' => 'Buku yang dipilih tidak valid',
             'tanggal_pinjam.required' => 'Tanggal pinjam wajib diisi',
-            'tanggal_pinjam.date' => 'Format tanggal pinjam tidak valid',
-            'tanggal_pinjam.before_or_equal' => 'Tanggal pinjam tidak boleh lebih dari hari ini',
-            'status.required' => 'Status wajib dipilih',
-            'status.in' => 'Status harus dipinjam atau dikembalikan',
-            'tanggal_kadaluarsa.required' => 'Tanggal kadaluarsa wajib diisi',
-            'tanggal_kadaluarsa.date' => 'Format tanggal kadaluarsa tidak valid',
-            'tanggal_kadaluarsa.after' => 'Tanggal kadaluarsa harus setelah tanggal pinjam',
         ]);
 
         $pinjaman = Pinjaman::findOrFail($id);

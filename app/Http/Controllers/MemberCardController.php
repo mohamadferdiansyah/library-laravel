@@ -35,25 +35,15 @@ class MemberCardController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'member_id' => 'required|integer|exists:member,id|unique:member_card,member_id',
-            'nomor_kartu' => 'required|string|min:8|max:20|unique:member_card,nomor_kartu|regex:/^[0-9A-Z\-]+$/',
+            'member_id' => 'required|integer',
+            'nomor_kartu' => 'required|string',
             'tanggal_aktif' => 'required|date|before_or_equal:today',
             'tanggal_kadaluarsa' => 'required|date|after:tanggal_aktif',
         ], [
             'member_id.required' => 'Member wajib dipilih',
-            'member_id.exists' => 'Member yang dipilih tidak valid',
-            'member_id.unique' => 'Member sudah memiliki kartu, tidak bisa membuat kartu baru',
             'nomor_kartu.required' => 'Nomor kartu wajib diisi',
-            'nomor_kartu.min' => 'Nomor kartu minimal 8 karakter',
-            'nomor_kartu.max' => 'Nomor kartu maksimal 20 karakter',
-            'nomor_kartu.unique' => 'Nomor kartu sudah ada, gunakan nomor lain',
-            'nomor_kartu.regex' => 'Nomor kartu hanya boleh berisi angka, huruf besar, dan tanda hubung',
             'tanggal_aktif.required' => 'Tanggal aktif wajib diisi',
-            'tanggal_aktif.date' => 'Format tanggal aktif tidak valid',
-            'tanggal_aktif.before_or_equal' => 'Tanggal aktif tidak boleh lebih dari hari ini',
             'tanggal_kadaluarsa.required' => 'Tanggal kadaluarsa wajib diisi',
-            'tanggal_kadaluarsa.date' => 'Format tanggal kadaluarsa tidak valid',
-            'tanggal_kadaluarsa.after' => 'Tanggal kadaluarsa harus setelah tanggal aktif',
         ]);
 
         MemberCard::create($request->all());
@@ -69,19 +59,9 @@ class MemberCardController extends Controller
             'tanggal_kadaluarsa' => 'required|date|after:tanggal_aktif',
         ], [
             'member_id.required' => 'Member wajib dipilih',
-            'member_id.exists' => 'Member yang dipilih tidak valid',
-            'member_id.unique' => 'Member sudah memiliki kartu lain',
             'nomor_kartu.required' => 'Nomor kartu wajib diisi',
-            'nomor_kartu.min' => 'Nomor kartu minimal 8 karakter',
-            'nomor_kartu.max' => 'Nomor kartu maksimal 20 karakter',
-            'nomor_kartu.unique' => 'Nomor kartu sudah ada, gunakan nomor lain',
-            'nomor_kartu.regex' => 'Nomor kartu hanya boleh berisi angka, huruf besar, dan tanda hubung',
             'tanggal_aktif.required' => 'Tanggal aktif wajib diisi',
-            'tanggal_aktif.date' => 'Format tanggal aktif tidak valid',
-            'tanggal_aktif.before_or_equal' => 'Tanggal aktif tidak boleh lebih dari hari ini',
             'tanggal_kadaluarsa.required' => 'Tanggal kadaluarsa wajib diisi',
-            'tanggal_kadaluarsa.date' => 'Format tanggal kadaluarsa tidak valid',
-            'tanggal_kadaluarsa.after' => 'Tanggal kadaluarsa harus setelah tanggal aktif',
         ]);
 
         $memberCard = MemberCard::findOrFail($id);

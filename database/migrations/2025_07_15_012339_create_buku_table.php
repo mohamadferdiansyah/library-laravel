@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('kode_buku');
             $table->integer('tahun_terbit');
             $table->string('penulis');
-            $table->bigInteger('penerbit');
+            $table->bigInteger('penerbit_id');
             $table->timestamps();
         });
     }
