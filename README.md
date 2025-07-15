@@ -44,8 +44,11 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
-# Atur koneksi database di .env lalu lakukan migrasi + seeder
-php artisan migrate --seed
+# Atur koneksi database di .env lalu lakukan migrasi
+php artisan migrate
+
+# Jalankan Seeder Untuk Data Dummy
+php artisan db:seed
 
 # Install dependency frontend (TailwindCSS)
 npm install
