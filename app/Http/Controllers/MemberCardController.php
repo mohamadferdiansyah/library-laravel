@@ -35,16 +35,28 @@ class MemberCardController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'member_id' => 'required|integer',
-            'nomor_kartu' => 'required|string',
-            'tanggal_aktif' => 'required|date|before_or_equal:today',
+            'member_id' => 'required|exists:member,id',
+            'nomor_kartu' => 'required|unique:member_card,nomor_kartu',
+            'tanggal_aktif' => 'required|date',
             'tanggal_kadaluarsa' => 'required|date|after:tanggal_aktif',
         ], [
             'member_id.required' => 'Member wajib dipilih',
+            'member_id.exists' => 'Member tidak ditemukan',
             'nomor_kartu.required' => 'Nomor kartu wajib diisi',
+            'nomor_kartu.unique' => 'Nomor kartu sudah digunakan',
             'tanggal_aktif.required' => 'Tanggal aktif wajib diisi',
+            'tanggal_aktif.date' => 'Format tanggal aktif tidak valid',
             'tanggal_kadaluarsa.required' => 'Tanggal kadaluarsa wajib diisi',
+            'tanggal_kadaluarsa.date' => 'Format tanggal kadaluarsa tidak valid',
+            'tanggal_kadaluarsa.after' => 'Tanggal kadaluarsa harus setelah tanggal aktif',
         ]);
+
+        // Cek apakah member sudah punya kartu
+        $existingCard = MemberCard::where('member_id', $request->member_id)->first();
+        if ($existingCard) {
+            return redirect()->route('member-card.index')
+                ->with('fail', 'Member sudah memiliki kartu member');
+        }
 
         MemberCard::create($request->all());
         return redirect()->route('member-card.index')->with('success', 'Member card berhasil ditambahkan!');
@@ -53,26 +65,34 @@ class MemberCardController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'member_id' => 'required|integer|exists:member,id|unique:member_card,member_id,' . $id,
-            'nomor_kartu' => 'required|string|min:8|max:20|unique:member_card,nomor_kartu,' . $id . '|regex:/^[0-9A-Z\-]+$/',
-            'tanggal_aktif' => 'required|date|before_or_equal:today',
+            'member_id' => 'required|unique:member,id~|exists:member,id',
+            'nomor_kartu' => 'required|unique:member_card,nomor_kartu,' . $id,
+            'tanggal_aktif' => 'required|date',
             'tanggal_kadaluarsa' => 'required|date|after:tanggal_aktif',
         ], [
             'member_id.required' => 'Member wajib dipilih',
+            'member_id.unique' => 'Member sudah memiliki kartu',
+            'member_id.exists' => 'Member tidak ditemukan',
             'nomor_kartu.required' => 'Nomor kartu wajib diisi',
+            'nomor_kartu.unique' => 'Nomor kartu sudah digunakan',
             'tanggal_aktif.required' => 'Tanggal aktif wajib diisi',
+            'tanggal_aktif.date' => 'Format tanggal aktif tidak valid',
             'tanggal_kadaluarsa.required' => 'Tanggal kadaluarsa wajib diisi',
+            'tanggal_kadaluarsa.date' => 'Format tanggal kadaluarsa tidak valid',
+            'tanggal_kadaluarsa.after' => 'Tanggal kadaluarsa harus setelah tanggal aktif',
         ]);
+
+        // Cek apakah member sudah punya kartu lain (kecuali yang sedang diedit)
+        $existingCard = MemberCard::where('member_id', $request->member_id)
+            ->where('id', '!=', $id)
+            ->first();
+        if ($existingCard) {
+            return redirect()->route('member-card.index')
+                ->with('fail', 'Member sudah memiliki kartu member lain');
+        }
 
         $memberCard = MemberCard::findOrFail($id);
         $memberCard->update($request->all());
         return redirect()->route('member-card.index')->with('success', 'Member card berhasil diperbarui!');
-    }
-
-    public function destroy($id)
-    {
-        $memberCard = MemberCard::findOrFail($id);
-        $memberCard->delete();
-        return redirect()->route('member-card.index')->with('success', 'Member card berhasil dihapus!');
     }
 }

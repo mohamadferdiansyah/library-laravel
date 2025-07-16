@@ -54,11 +54,23 @@
                     {{ session('success') }}
                 </div>
             @endif
-            @if(session('fail'))
-                <div class="mb-4 px-4 py-3 rounded bg-red-100 text-red-800 border border-red-300">
-                    {{ session('fail') }}
-                </div>
-            @endif
+            @if($errors->any())
+    <div class="mb-4 px-4 py-3 rounded bg-red-100 text-red-800 border border-red-300">
+        <div class="flex items-start">
+            <svg class="h-5 w-5 text-red-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <div>
+                <h4 class="font-medium text-red-800 mb-1">Terjadi kesalahan validasi:</h4>
+                <ul class="list-disc list-inside text-sm">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+@endif
             
             @if($memberCards->count() > 0)
                 <table class="min-w-full bg-white border border-gray-200 rounded-lg">
@@ -138,7 +150,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Member</label>
-                        <select name="member_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <select name="member_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Pilih Member</option>
                             @foreach($members as $member)
                                 <option value="{{ $member->id }}">{{ $member->nama }} ({{ $member->email }})</option>
@@ -147,15 +159,15 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Kartu</label>
-                        <input type="text" name="nomor_kartu" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor Kartu" required>
+                        <input type="text" name="nomor_kartu" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor Kartu">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Aktif</label>
-                        <input type="date" name="tanggal_aktif" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <input type="date" name="tanggal_aktif" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluarsa</label>
-                        <input type="date" name="tanggal_kadaluarsa" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <input type="date" name="tanggal_kadaluarsa" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div class="flex justify-end space-x-2 mt-6">
@@ -183,7 +195,7 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Member</label>
-                        <select name="member_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <select name="member_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Pilih Member</option>
                             @foreach($members as $member)
                                 <option value="{{ $member->id }}" {{ $member->id == $memberCard->member_id ? 'selected' : '' }}>
@@ -194,15 +206,15 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Kartu</label>
-                        <input type="text" name="nomor_kartu" value="{{ $memberCard->nomor_kartu }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor Kartu" required>
+                        <input type="text" name="nomor_kartu" value="{{ $memberCard->nomor_kartu }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nomor Kartu">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Aktif</label>
-                        <input type="date" name="tanggal_aktif" value="{{ $memberCard->tanggal_aktif }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <input type="date" name="tanggal_aktif" value="{{ $memberCard->tanggal_aktif }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kadaluarsa</label>
-                        <input type="date" name="tanggal_kadaluarsa" value="{{ $memberCard->tanggal_kadaluarsa }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <input type="date" name="tanggal_kadaluarsa" value="{{ $memberCard->tanggal_kadaluarsa }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div class="flex justify-end space-x-2 mt-6">
